@@ -1,0 +1,165 @@
+CREATE DATABASE Faith;
+
+CREATE TABLE Hotel(
+hotelID INT PRIMARY KEY,
+hotelName VARCHAR(100) ,
+H_Loc VARCHAR(100) ,
+H_Policy TEXT,
+H_Email VARCHAR(100) UNIQUE,
+H_PhoneNum VARCHAR(15),
+H_Website VARCHAR(100),
+)
+
+CREATE TABLE Airline (
+Air_ID INT PRIMARY KEY,
+Air_Name VARCHAR(100) NOT NULL,
+Air_Policy TEXT,
+Air_Email VARCHAR(100) UNIQUE,
+Air_PhoneNum VARCHAR(15),
+Air_Website VARCHAR(100)
+);
+
+CREATE TABLE Flight (
+F_ID INT PRIMARY KEY,
+F_Num VARCHAR(10) NOT NULL,
+Dept_Loc VARCHAR(100) NOT NULL,
+Dept_Date DATE NOT NULL,
+Dept_Time TIME NOT NULL,
+Arr_Loc VARCHAR(100) NOT NULL,
+Arr_Date DATE NOT NULL,
+Arr_Time TIME NOT NULL,
+Air_ID INT,
+FOREIGN KEY (Air_ID) REFERENCES Airline(Air_ID)
+);
+
+CREATE TABLE Car_Comp (
+Comp_ID INT PRIMARY KEY,
+Comp_Name VARCHAR(100) NOT NULL,
+Pickup_Loc VARCHAR(100) NOT NULL,
+Dropoff_Loc VARCHAR(100) NOT NULL,
+Comp_Policy TEXT,
+Comp_Email VARCHAR(100) UNIQUE,
+Comp_PhoneNum VARCHAR(15),
+Comp_Website VARCHAR(100)
+);
+
+CREATE TABLE Orders(
+orderID INT PRIMARY KEY,
+bookingstatus VARCHAR(30) NOT NULL,
+products VARCHAR(30) ,
+salesDeptEmpl VARCHAR(100),
+Custpref VARCHAR (100),
+Ord_Date DATE NOT NULL,
+Ord_App VARCHAR(100),
+Cust_ID INT,
+FOREIGN KEY (Cust_ID) REFERENCES Customer(Cust_ID)
+);
+
+CREATE TABLE Customer (
+Cust_ID INT PRIMARY KEY,
+Cust_Name VARCHAR(100) NOT NULL,
+Cust_PhoneNum VARCHAR(15),
+Cust_Email VARCHAR(100) UNIQUE,
+Cust_Address VARCHAR(255),
+Nationality VARCHAR(50),
+Bank_Acc VARCHAR(20),
+Date_Birth DATE,
+Credit_Worthiness VARCHAR(50)
+);
+
+CREATE TABLE Room (
+H_ID INT,
+Room_ID INT,
+R_Number VARCHAR(10),
+R_Type VARCHAR(50),
+R_Price DECIMAL(10, 2),
+R_Availability BIT,
+R_Amenities VARCHAR(100),
+PRIMARY KEY (H_ID, Room_ID),
+FOREIGN KEY (H_ID) REFERENCES Hotel(hotelID)
+)
+
+CREATE TABLE Seat (
+F_ID INT,
+Seat_ID INT,
+S_Number VARCHAR(10),
+S_Pref VARCHAR(50),
+S_Price DECIMAL(10, 2),
+S_Availability BIT,
+PRIMARY KEY (F_ID, Seat_ID),
+FOREIGN KEY (F_ID) REFERENCES Flight(F_ID)
+);
+
+CREATE TABLE Car(
+Comp_ID INT,
+Car_ID INT,
+License_Num VARCHAR(50),
+Model VARCHAR(50),
+Make VARCHAR(50),
+C_Type VARCHAR(50),
+C_Year DATE,
+Trans_Type VARCHAR(20),
+Num_Seats INT,
+Features TEXT,
+Fuel_Type VARCHAR(20),
+Rental_Price DECIMAL(10, 2),
+Cust_ID INT,
+PRIMARY KEY (Comp_ID, Car_ID),
+FOREIGN KEY (Comp_ID) REFERENCES Car_Comp(Comp_ID),
+FOREIGN KEY (Cust_ID) REFERENCES Customer(Cust_ID)
+)
+
+CREATE TABLE Payment (
+OrderID INT,
+Pay_RefNum VARCHAR(50) PRIMARY KEY,
+Paid_Amount DECIMAL(10, 2),
+payStatus VARCHAR(20),
+Discount DECIMAL(5, 2),
+Conditions TEXT,
+FOREIGN KEY (OrderID) REFERENCES Orders (OrderID)
+);
+
+CREATE TABLE Travelled_with (
+Cust_ID INT,
+Air_ID INT,
+PRIMARY KEY (Cust_ID, Air_ID),
+FOREIGN KEY (Cust_ID) REFERENCES Customer(Cust_ID),
+FOREIGN KEY (Air_ID) REFERENCES Airline(Air_ID)
+);
+
+CREATE TABLE Room_booked (
+Ord_ID INT,
+Cust_ID INT,
+H_ID INT,
+Room_ID INT,
+PRIMARY KEY (Ord_ID, Cust_ID, H_ID, Room_ID),
+FOREIGN KEY (Ord_ID) REFERENCES Orders(OrderID),
+FOREIGN KEY (Cust_ID) REFERENCES Customer(Cust_ID),
+FOREIGN KEY (H_ID) REFERENCES Hotel(hotelID),
+FOREIGN KEY (Room_ID) REFERENCES Room (Room_ID)
+);
+
+CREATE TABLE Car_rented (
+Ord_ID INT,
+Cust_ID INT,
+Comp_ID INT,
+Car_ID INT,
+PRIMARY KEY (Ord_ID, Cust_ID, Comp_ID, Car_ID),
+FOREIGN KEY (Ord_ID) REFERENCES Orders(OrderID),
+FOREIGN KEY (Cust_ID) REFERENCES Customer(Cust_ID),
+FOREIGN KEY (Comp_ID) REFERENCES Car_Comp(Comp_ID),
+FOREIGN KEY (Car_ID) REFERENCES Car(Car_ID)
+);
+
+CREATE TABLE Seat_reserved (
+F_ID INT,
+Seat_ID INT,
+Cust_ID INT,
+Ord_ID INT,
+PRIMARY KEY (F_ID, Seat_ID, Cust_ID, Ord_ID),
+FOREIGN KEY (F_ID) REFERENCES Flight(F_ID),
+FOREIGN KEY (Seat_ID) REFERENCES Seat(Seat_ID),
+FOREIGN KEY (Cust_ID) REFERENCES Customer(Cust_ID),
+FOREIGN KEY (Ord_ID) REFERENCES Orders(OrderID)
+)
+
