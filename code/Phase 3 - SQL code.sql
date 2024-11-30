@@ -1,4 +1,3 @@
-CREATE DATABASE Faith;
 
 CREATE TABLE Hotel(
 hotelID INT PRIMARY KEY,
@@ -8,7 +7,7 @@ H_Policy TEXT,
 H_Email VARCHAR(100) UNIQUE,
 H_PhoneNum VARCHAR(15),
 H_Website VARCHAR(100),
-)
+);
 
 CREATE TABLE Airline (
 Air_ID INT PRIMARY KEY,
@@ -43,18 +42,6 @@ Comp_PhoneNum VARCHAR(15),
 Comp_Website VARCHAR(100)
 );
 
-CREATE TABLE Orders(
-orderID INT PRIMARY KEY,
-bookingstatus VARCHAR(30) NOT NULL,
-products VARCHAR(30) ,
-salesDeptEmpl VARCHAR(100),
-Custpref VARCHAR (100),
-Ord_Date DATE NOT NULL,
-Ord_App VARCHAR(100),
-Cust_ID INT,
-FOREIGN KEY (Cust_ID) REFERENCES Customer(Cust_ID)
-);
-
 CREATE TABLE Customer (
 Cust_ID INT PRIMARY KEY,
 Cust_Name VARCHAR(100) NOT NULL,
@@ -67,6 +54,18 @@ Date_Birth DATE,
 Credit_Worthiness VARCHAR(50)
 );
 
+CREATE TABLE Orders(
+orderID INT PRIMARY KEY,
+bookingstatus VARCHAR(30) NOT NULL,
+products VARCHAR(30) ,
+salesDeptEmpl VARCHAR(100),
+Custpref VARCHAR (100),
+Ord_Date DATE NOT NULL,
+Ord_App VARCHAR(100),
+Cust_ID INT,
+FOREIGN KEY (Cust_ID) REFERENCES Customer(Cust_ID)
+);
+
 CREATE TABLE Room (
 H_ID INT,
 Room_ID INT,
@@ -77,7 +76,7 @@ R_Availability BIT,
 R_Amenities VARCHAR(100),
 PRIMARY KEY (H_ID, Room_ID),
 FOREIGN KEY (H_ID) REFERENCES Hotel(hotelID)
-)
+);
 
 CREATE TABLE Seat (
 F_ID INT,
@@ -107,7 +106,7 @@ Cust_ID INT,
 PRIMARY KEY (Comp_ID, Car_ID),
 FOREIGN KEY (Comp_ID) REFERENCES Car_Comp(Comp_ID),
 FOREIGN KEY (Cust_ID) REFERENCES Customer(Cust_ID)
-)
+);
 
 CREATE TABLE Payment (
 OrderID INT,
@@ -119,7 +118,7 @@ Conditions TEXT,
 FOREIGN KEY (OrderID) REFERENCES Orders (OrderID)
 );
 
-CREATE TABLE Travelled_with (
+CREATE TABLE Traveled_with (
 Cust_ID INT,
 Air_ID INT,
 PRIMARY KEY (Cust_ID, Air_ID),
@@ -135,8 +134,7 @@ Room_ID INT,
 PRIMARY KEY (Ord_ID, Cust_ID, H_ID, Room_ID),
 FOREIGN KEY (Ord_ID) REFERENCES Orders(OrderID),
 FOREIGN KEY (Cust_ID) REFERENCES Customer(Cust_ID),
-FOREIGN KEY (H_ID) REFERENCES Hotel(hotelID),
-FOREIGN KEY (Room_ID) REFERENCES Room (Room_ID)
+FOREIGN KEY (H_ID, Room_ID) REFERENCES Room (H_ID, Room_ID)
 );
 
 CREATE TABLE Car_rented (
@@ -147,8 +145,7 @@ Car_ID INT,
 PRIMARY KEY (Ord_ID, Cust_ID, Comp_ID, Car_ID),
 FOREIGN KEY (Ord_ID) REFERENCES Orders(OrderID),
 FOREIGN KEY (Cust_ID) REFERENCES Customer(Cust_ID),
-FOREIGN KEY (Comp_ID) REFERENCES Car_Comp(Comp_ID),
-FOREIGN KEY (Car_ID) REFERENCES Car(Car_ID)
+FOREIGN KEY (Comp_ID, Car_ID) REFERENCES Car(Comp_ID, Car_ID)
 );
 
 CREATE TABLE Seat_reserved (
@@ -157,9 +154,8 @@ Seat_ID INT,
 Cust_ID INT,
 Ord_ID INT,
 PRIMARY KEY (F_ID, Seat_ID, Cust_ID, Ord_ID),
-FOREIGN KEY (F_ID) REFERENCES Flight(F_ID),
-FOREIGN KEY (Seat_ID) REFERENCES Seat(Seat_ID),
+FOREIGN KEY (F_ID, Seat_ID) REFERENCES Seat(F_ID, Seat_ID),
 FOREIGN KEY (Cust_ID) REFERENCES Customer(Cust_ID),
 FOREIGN KEY (Ord_ID) REFERENCES Orders(OrderID)
-)
+);
 
