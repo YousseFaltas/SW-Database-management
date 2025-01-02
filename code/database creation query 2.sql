@@ -5,7 +5,7 @@ Products TEXT,
 SalesDept_empl VARCHAR (100),
 Cust_pref TEXT,
 Ord_date DATE,
-Ord_app VARBINARY(MAX),
+Ord_app VARCHAR(100),
 Cust_id INT,
 FOREIGN KEY (Cust_id) REFERENCES Customer(Cust_id)
 )
@@ -13,7 +13,7 @@ FOREIGN KEY (Cust_id) REFERENCES Customer(Cust_id)
 CREATE TABLE Room (
 R_id INT,
 H_id INT,
-R_num INT NOT NULL,
+R_num VARCHAR(50) NOT NULL,
 R_Type VARCHAR(50),
 R_Price DECIMAL(10, 2) NOT NULL,
 R_available VARCHAR(30) NOT NULL,
@@ -59,11 +59,11 @@ FOREIGN KEY (Comp_id) REFERENCES Car_Comp(Comp_id)
 
 CREATE TABLE Payment(
 Pay_refnum INT,
-Ord_id INT,
+Cust_id INT,
 Paid_Amount DECIMAL (10,2),
 Status VARCHAR(30),
 Discount DECIMAL (10,2),
 Conditions TEXT
-PRIMARY KEY (Pay_refnum , Ord_id)
-FOREIGN KEY (Ord_id) REFERENCES Orders(Ord_id)
+PRIMARY KEY (Pay_refnum , Cust_id)
+FOREIGN KEY (Cust_id) REFERENCES Customer(Cust_id)
 )

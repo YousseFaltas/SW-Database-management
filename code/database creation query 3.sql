@@ -17,7 +17,7 @@ Car_id INT,
 PRIMARY KEY (Ord_id , Cust_id , Comp_id , Car_id),
 FOREIGN KEY (Ord_id) REFERENCES Orders(Ord_id),
 FOREIGN KEY (Cust_id) REFERENCES Customer (Cust_id),
-FOREIGN KEY (Comp_id,Car_id) REFERENCES Car(Comp_id , C_id)
+FOREIGN KEY (Car_id,Comp_id) REFERENCES Car(C_id , Comp_id)
 )
 
 CREATE TABLE Ticket_reserved(
@@ -28,5 +28,5 @@ Ticket_id INT,
 PRIMARY KEY (Ord_id , Cust_id , Air_id , Ticket_id),
 FOREIGN KEY (Ord_id) REFERENCES Orders(Ord_id),
 FOREIGN KEY (Cust_id) REFERENCES Customer (Cust_id),
-FOREIGN KEY (Air_id,Ticket_id) REFERENCES Ticket(Air_id , Ticket_id)
+FOREIGN KEY (Ticket_id,Air_id) REFERENCES Ticket( Ticket_id , Air_id)
 )

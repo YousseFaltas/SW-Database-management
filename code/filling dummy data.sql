@@ -92,7 +92,7 @@ INSERT INTO Car (Comp_id, C_id, License_Num, Model, Make, C_Type, C_Year, Trans_
 (10, 310, 'LMN8765', 'Sedan', 'Mazda', 'Luxury', '2020', 'Automatic', 4, 'Sunroof, Heated seats', 'Diesel', 50);
 
 -- Payment Table
-INSERT INTO Payment (Ord_id, Pay_RefNum, Paid_Amount, Status, Discount, Conditions) VALUES
+INSERT INTO Payment (Cust_id, Pay_RefNum, Paid_Amount, Status, Discount, Conditions) VALUES
 (1, 001, 550, 'Completed', 10, 'Full payment received'),
 (2, 002, 380, 'Pending', 0, 'Awaiting payment confirmation'),
 (3, 003, 500, 'Completed', 5, 'Discount applied for early booking'),
