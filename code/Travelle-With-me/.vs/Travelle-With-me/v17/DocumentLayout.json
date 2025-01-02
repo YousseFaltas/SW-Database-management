@@ -1,0 +1,37 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\GitHub projects\\SW-Database-management\\code\\Travelle-With-me\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{8FCCD5BF-09B8-4B8B-976A-703C403707C8}|Travelle-With-me.pyproj|C:\\GitHub projects\\SW-Database-management\\code\\Travelle-With-me\\Travelle_With_me.py||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{8FCCD5BF-09B8-4B8B-976A-703C403707C8}|Travelle-With-me.pyproj|solutionrelative:Travelle_With_me.py||{8B382828-6202-11D1-8870-0000F87579D2}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Travelle_With_me.py",
+              "DocumentMoniker": "C:\\GitHub projects\\SW-Database-management\\code\\Travelle-With-me\\Travelle_With_me.py",
+              "RelativeDocumentMoniker": "Travelle_With_me.py",
+              "ToolTip": "C:\\GitHub projects\\SW-Database-management\\code\\Travelle-With-me\\Travelle_With_me.py",
+              "RelativeToolTip": "Travelle_With_me.py",
+              "ViewState": "AQIAABcAAAAAAAAAAAAUwCoAAAAUAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
+              "WhenOpened": "2024-12-29T07:45:48.945Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
