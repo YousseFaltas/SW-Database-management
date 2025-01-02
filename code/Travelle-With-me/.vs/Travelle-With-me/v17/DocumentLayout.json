@@ -5,6 +5,10 @@
     {
       "AbsoluteMoniker": "D:0:0:{8FCCD5BF-09B8-4B8B-976A-703C403707C8}|Travelle-With-me.pyproj|C:\\GitHub projects\\SW-Database-management\\code\\Travelle-With-me\\Travelle_With_me.py||{8B382828-6202-11D1-8870-0000F87579D2}",
       "RelativeMoniker": "D:0:0:{8FCCD5BF-09B8-4B8B-976A-703C403707C8}|Travelle-With-me.pyproj|solutionrelative:Travelle_With_me.py||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\GitHub projects\\SW-Database-management\\code\\Travelle-With-me\\staging.py||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:staging.py||{8B382828-6202-11D1-8870-0000F87579D2}"
     }
   ],
   "DocumentGroupContainers": [
@@ -14,8 +18,21 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 1,
           "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "staging.py",
+              "DocumentMoniker": "C:\\GitHub projects\\SW-Database-management\\code\\Travelle-With-me\\staging.py",
+              "RelativeDocumentMoniker": "staging.py",
+              "ToolTip": "C:\\GitHub projects\\SW-Database-management\\code\\Travelle-With-me\\staging.py",
+              "RelativeToolTip": "staging.py",
+              "ViewState": "AQIAAB0AAAAAAAAAAAAAACQAAABIAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
+              "WhenOpened": "2025-01-02T15:04:31.31Z",
+              "EditorCaption": ""
+            },
             {
               "$type": "Document",
               "DocumentIndex": 0,
@@ -24,7 +41,7 @@
               "RelativeDocumentMoniker": "Travelle_With_me.py",
               "ToolTip": "C:\\GitHub projects\\SW-Database-management\\code\\Travelle-With-me\\Travelle_With_me.py",
               "RelativeToolTip": "Travelle_With_me.py",
-              "ViewState": "AQIAABcAAAAAAAAAAAAUwCoAAAAUAAAA",
+              "ViewState": "AQIAACsAAAAAAAAAAAAAACsAAAAOAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
               "WhenOpened": "2024-12-29T07:45:48.945Z",
               "EditorCaption": ""
