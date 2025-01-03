@@ -3,6 +3,7 @@ import email
 from tkinter import *
 import tkinter as tk
 from tkinter import ttk, messagebox
+from turtle import update
 from venv import create
 import pyodbc
 
@@ -140,6 +141,156 @@ def fetch_table_data():
     else:
         messagebox.showwarning("Input Error", "Please enter a table")
             
+def update_room () :
+    int_arr = ["H_id, R_id , R_Price"]
+    set_att = entry_set_att.get()
+    set_val = entry_set_val.get()
+    where_att=entry_where_att.get()
+    where_val = entry_where_val.get()
+    if set_att not in int_arr:
+        set_val = f"'{entry_set_val}'"
+    if where_att not in int_arr:
+        where_val= f"'{entry_where_val}'"
+    if set_att and set_val and where_att and where_val:
+        conn = connect_to_database()
+        if conn:
+            cursor = conn.cursor()
+            try:
+                if where_att and where_val:
+                    cursor.execute(f'UPDATE Room SET {set_att} = {set_val} WHERE {where_att} = {where_val}')
+                    conn.commit()
+                else:
+                    cursor.execute("""
+                    UPDATE Room
+                    SET ? = ?""", (set_att, set_val))
+                    conn.commit()
+                messagebox.showinfo("Success", "Room updated successfully!")
+            except pyodbc.Error as e:
+                messagebox.showerror("Error", f"Error updating Room: {e}")
+            finally:
+                conn.close()
+    else:
+        messagebox.showwarning("Input Error", "Please enter all fields!")
+        
+def update_customer () :
+    int_arr = ["Cust_id","Date_birth"]
+    set_att = entry_cust_set_att.get()
+    set_val = entry_cust_set_val.get()
+    where_att = entry_cust_where_att.get()
+    where_val = entry_cust_where_val.get()
+    if set_att in int_arr:
+        set_val = f"'{entry_cust_set_val}'"
+    if where_att in int_arr:
+        where_val= f"'{entry_cust_where_val}'"
+    if set_att and set_val and where_att and where_val:
+        conn = connect_to_database()
+        if conn:
+            cursor = conn.cursor()
+            try:
+                if where_att and where_val:
+                    cursor.execute(f'UPDATE Customer SET {set_att} = {set_val} WHERE {where_att} = {where_val}')
+                    conn.commit()
+                else:
+                    cursor.execute("""
+                    UPDATE Customer
+                    SET ? = ?""", (set_att, set_val))
+                    conn.commit()
+                messagebox.showinfo("Success", "Customer updated successfully!")
+            except pyodbc.Error as e:
+                messagebox.showerror("Error", f"Error updating Customer: {e}")
+            finally:
+                conn.close()
+    else:
+        messagebox.showwarning("Input Error", "Please enter all fields!")
+        
+# Add this function to handle join queries
+def execute_join_query():
+    table1 = entry_join_table1.get()
+    table2 = entry_join_table2.get()
+    join_condition = entry_join_condition.get()
+    columns = entry_join_columns.get()
+
+    if table1 and table2 and join_condition and columns:
+        conn = connect_to_database()
+        if conn:
+            cursor = conn.cursor()
+            try:
+                # Construct the SQL query dynamically
+                query = f"""
+                SELECT {columns}
+                FROM {table1}
+                INNER JOIN {table2} ON {join_condition};
+                """
+                cursor.execute(query)
+                rows = cursor.fetchall()
+
+                # Clear the existing data in the treeview
+                for row in tree_join.get_children():
+                    tree_join.delete(row)
+
+                # Insert the new data into the treeview
+                for row in rows:
+                    tree_join.insert("", tk.END, values=row)
+
+                messagebox.showinfo("Success", "Join query executed successfully!")
+            except pyodbc.Error as e:
+                messagebox.showerror("Error", f"Error executing join query: {e}")
+            finally:
+                conn.close()
+    else:
+        messagebox.showwarning("Input Error", "Please fill all fields for the join query!")
+
+
+# Configure the Treeview columns dynamically based on the query results
+def configure_treeview_columns(columns):
+    tree_join["columns"] = columns
+    for col in columns:
+        tree_join.heading(col, text=col)
+        tree_join.column(col, width=100)
+
+# Modify the execute_join_query function to configure the Treeview columns
+def execute_join_query():
+    table1 = entry_join_table1.get()
+    table2 = entry_join_table2.get()
+    join_condition = entry_join_condition.get()
+    columns = entry_join_columns.get()
+
+    if table1 and table2 and join_condition and columns:
+        conn = connect_to_database()
+        if conn:
+            cursor = conn.cursor()
+            try:
+                # Construct the SQL query dynamically
+                query = f"""
+                SELECT {columns}
+                FROM {table1}
+                INNER JOIN {table2} ON {join_condition};
+                """
+                cursor.execute(query)
+                rows = cursor.fetchall()
+
+                # Get column names from the query result
+                column_names = [column[0] for column in cursor.description]
+
+                # Clear the existing data in the treeview
+                for row in tree_join.get_children():
+                    tree_join.delete(row)
+
+                # Configure the Treeview columns dynamically
+                configure_treeview_columns(column_names)
+
+                # Insert the new data into the treeview
+                for row in rows:
+                    tree_join.insert("", tk.END, values=row)
+
+                messagebox.showinfo("Success", "Join query executed successfully!")
+            except pyodbc.Error as e:
+                messagebox.showerror("Error", f"Error executing join query: {e}")
+            finally:
+                conn.close()
+    else:
+        messagebox.showwarning("Input Error", "Please fill all fields for the join query!")
+        
 root = tk.Tk()
 root.title("database GUI")
 
@@ -243,7 +394,7 @@ tk.Button(second_frame, text="Add Hotel", command=insert_hotel).grid(row=add_hot
 #Adding the delete section for the room table
 base_row=7
 base_col_del_room =2
-tk.Label(second_frame , text= "delete from the table customer").grid(row = base_row , column = 4 , padx =5 ,pady =5)
+tk.Label(second_frame , text= "delete from the table room ").grid(row = base_row , column = 4 , padx =5 ,pady =5)
 tk.Label(second_frame , text= "condition").grid(row=base_row+2 , column = base_col_del_room ,padx=5 ,pady=5)
 tk.Label(second_frame , text= "(attribute)").grid(row=base_row+1 , column = base_col_del_room+1 ,padx=5 ,pady=5)
 entry_att_room = tk.Entry(second_frame)
@@ -269,11 +420,54 @@ entry_value_table.grid(row = del_table_base_row+2 , column = base_col_del_room+3
 
 tk.Button(second_frame , text = "delete ticket" , command=delete_room).grid(row = del_table_base_row+2 , column = base_col_del_room+4 , padx=10 ,pady=5)
 
+#Adding the update section for the room table
+update_base_row = 14
+tk.Label(second_frame , text= "update from the table room").grid(row = update_base_row , column = 4 , padx =5 ,pady =5)
+tk.Label(second_frame , text= "column to update").grid(row=update_base_row+2 , column = base_col_del_room ,padx=5 ,pady=5)
+tk.Label(second_frame , text= "(attribute)").grid(row=update_base_row+1 , column = base_col_del_room+1 ,padx=5 ,pady=5)
+entry_set_att = tk.Entry(second_frame)
+entry_set_att.grid(row = update_base_row+2 , column = base_col_del_room+1 , padx = 5 , pady=5)
+tk.Label(second_frame , text= "=").grid(row = update_base_row+2 , column = base_col_del_room+2 , padx =5 ,pady =5)
+tk.Label(second_frame , text= "(value)").grid(row=update_base_row+1 , column =base_col_del_room+3 ,padx=5 ,pady=5)
+entry_set_val = tk.Entry(second_frame)
+entry_set_val.grid(row = update_base_row+2 , column = base_col_del_room+3 , padx = 5 , pady=5)
+tk.Label(second_frame , text= "=").grid(row = update_base_row+3 , column = base_col_del_room+2 , padx =5 ,pady =5)
+#condition
+tk.Label(second_frame , text= "condition").grid(row=update_base_row+3 , column = base_col_del_room ,padx=5 ,pady=5)
+entry_where_val = tk.Entry(second_frame)
+entry_where_val.grid(row = update_base_row+3 , column = base_col_del_room+3 , padx = 5 , pady=5)
+tk.Label(second_frame , text= "=").grid(row = update_base_row+3 , column = base_col_del_room+2 , padx =5 ,pady =5)
+entry_where_att = tk.Entry(second_frame)
+entry_where_att.grid(row = update_base_row+3 , column = base_col_del_room+1 , padx = 5 , pady=5)
+
+tk.Button(second_frame , text = "update room" , command=update_room).grid(row = update_base_row+3 , column = base_col_del_room+4 , padx=10 ,pady=5)
+
+#Adding the update section for the customer table 
+update_customer_row = 20
+tk.Label(second_frame , text= "update from the Customer room").grid(row = update_customer_row , column = 4 , padx =5 ,pady =5)
+tk.Label(second_frame , text= "column to update").grid(row=update_customer_row+2 , column = base_col_del_room ,padx=5 ,pady=5)
+tk.Label(second_frame , text= "(attribute)").grid(row=update_customer_row+1 , column = base_col_del_room+1 ,padx=5 ,pady=5)
+entry_cust_set_att = tk.Entry(second_frame)
+entry_cust_set_att.grid(row = update_customer_row+2 , column = base_col_del_room+1 , padx = 5 , pady=5)
+tk.Label(second_frame , text= "=").grid(row = update_customer_row+2 , column = base_col_del_room+2 , padx =5 ,pady =5)
+tk.Label(second_frame , text= "(value)").grid(row=update_customer_row+1 , column =base_col_del_room+3 ,padx=5 ,pady=5)
+entry_cust_set_val = tk.Entry(second_frame)
+entry_cust_set_val.grid(row = update_customer_row+2 , column = base_col_del_room+3 , padx = 5 , pady=5)
+tk.Label(second_frame , text= "=").grid(row = update_customer_row+3 , column = base_col_del_room+2 , padx =5 ,pady =5)
+#condition
+tk.Label(second_frame , text= "condition").grid(row=update_customer_row+3 , column = base_col_del_room ,padx=5 ,pady=5)
+entry_cust_where_val = tk.Entry(second_frame)
+entry_cust_where_val.grid(row = update_customer_row+3 , column = base_col_del_room+3 , padx = 5 , pady=5)
+tk.Label(second_frame , text= "=").grid(row = update_customer_row+3 , column = base_col_del_room+2 , padx =5 ,pady =5)
+entry_cust_where_att = tk.Entry(second_frame)
+entry_cust_where_att.grid(row = update_customer_row+3 , column = base_col_del_room+1 , padx = 5 , pady=5)
+
+tk.Button(second_frame , text = "update customer" , command=update_customer).grid(row = update_customer_row+3 , column = base_col_del_room+4 , padx=10 ,pady=5)
 
 # Adding the Treeview widget 
-starting_row_tree = 15
+starting_row_tree = 27
 
-tk.Label(second_frame , text= "select table to display data").grid(row = 14 , column = 4 , padx =5 ,pady =5)
+tk.Label(second_frame , text= "select table to display data").grid(row = 26 , column = 4 , padx =5 ,pady =5)
 
 tk.Label(second_frame , text= "table name").grid(row=starting_row_tree , column = 3 ,padx=5 ,pady=5)
 entry_table_name = tk.Entry(second_frame)
@@ -282,7 +476,32 @@ entry_table_name.grid(row = starting_row_tree , column = 4 , padx = 5 , pady=5)
 tk.Button(second_frame , text="Fetch tabel Data", command=fetch_table_data).grid(row = starting_row_tree , column = 5 , padx=10 ,pady=10)
 
 
-   
+# Add this section to the GUI for join queries
+join_base_row = 30
+tk.Label(second_frame, text="Join Query Section").grid(row=join_base_row, column=4, padx=10, pady=10)
+
+tk.Label(second_frame, text="Table 1:").grid(row=join_base_row + 1, column=0, padx=5, pady=5)
+entry_join_table1 = tk.Entry(second_frame)
+entry_join_table1.grid(row=join_base_row + 1, column=1, padx=5, pady=5)
+
+tk.Label(second_frame, text="Table 2:").grid(row=join_base_row + 1, column=2, padx=5, pady=5)
+entry_join_table2 = tk.Entry(second_frame)
+entry_join_table2.grid(row=join_base_row + 1, column=3, padx=5, pady=5)
+
+tk.Label(second_frame, text="Join Condition:").grid(row=join_base_row + 1, column=4, padx=5, pady=5)
+entry_join_condition = tk.Entry(second_frame)
+entry_join_condition.grid(row=join_base_row + 1, column=5, padx=5, pady=5)
+
+tk.Label(second_frame, text="Columns to Select:").grid(row=join_base_row + 2, column=0, padx=5, pady=5)
+entry_join_columns = tk.Entry(second_frame)
+entry_join_columns.grid(row=join_base_row + 2, column=1, padx=5, pady=5)
+
+tk.Button(second_frame, text="Execute Join Query", command=execute_join_query).grid(row=join_base_row + 2, column=4, padx=10, pady=10)
+
+# Add a Treeview to display join query results
+tree_join = ttk.Treeview(second_frame, columns=("Column1", "Column2", "Column3"), show="headings")
+tree_join.grid(row=join_base_row + 3, column=0, columnspan=8, padx=10, pady=10, sticky="nsew")
+
 
 # Run the Application
 root.mainloop()
