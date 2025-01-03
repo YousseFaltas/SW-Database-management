@@ -6,6 +6,8 @@ from tkinter import ttk, messagebox
 from turtle import update
 from venv import create
 import pyodbc
+import csv
+from tkinter import filedialog
 
 def connect_to_database ():
     try :
@@ -111,7 +113,7 @@ def delete_ticket():
 
 # Select operations
 def fetch_table_data():
-    table_name = entry_table_name.get()
+    table_name = table_var1.get()
     conn = connect_to_database()
     if conn:
         cursor = conn.cursor()
@@ -290,6 +292,56 @@ def execute_join_query():
                 conn.close()
     else:
         messagebox.showwarning("Input Error", "Please fill all fields for the join query!")
+
+
+# Fetch table names from the database
+def get_table_names():
+    conn = connect_to_database()
+    if conn:
+        cursor = conn.cursor()
+        try:
+            cursor.execute("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE';")
+            tables = [row[0] for row in cursor.fetchall()]
+            return tables
+        except pyodbc.Error as e:
+            messagebox.showerror("Error", f"Error fetching table names: {e}")
+            return []
+        finally:
+            conn.close()
+
+# Export data to CSV
+def export_to_csv():
+    table_name = table_var.get()
+    if not table_name:
+        messagebox.showwarning("Input Error", "Please select a table to export.")
+        return
+    file_path = filedialog.asksaveasfilename(defaultextension=".csv", filetypes=[("CSV files", "*.csv")])
+    if not file_path:
+        return  # User cancelled the dialog
+    conn = connect_to_database()
+    if conn:
+        cursor = conn.cursor()
+        try:
+            cursor.execute(f"SELECT * FROM {table_name}")
+            rows = cursor.fetchall()
+            if not rows:
+                messagebox.showinfo("Info", "No data to export.")
+                return
+            # Get column names
+            columns = [column[0] for column in cursor.description]
+            # Write to CSV
+            with open(file_path, 'w', newline='', encoding='utf-8') as csvfile:
+                writer = csv.writer(csvfile)
+                writer.writerow(columns)
+                for row in rows:
+                    writer.writerow(row)
+            messagebox.showinfo("Success", f"Data from {table_name} has been exported to {file_path}.")
+        except pyodbc.Error as e:
+            messagebox.showerror("Error", f"Error exporting data: {e}")
+        finally:
+            conn.close()
+    else:
+        messagebox.showwarning("Database Error", "Could not connect to the database.")
         
 root = tk.Tk()
 root.title("database GUI")
@@ -464,14 +516,20 @@ entry_cust_where_att.grid(row = update_customer_row+3 , column = base_col_del_ro
 
 tk.Button(second_frame , text = "update customer" , command=update_customer).grid(row = update_customer_row+3 , column = base_col_del_room+4 , padx=10 ,pady=5)
 
+
 # Adding the Treeview widget 
+tables = get_table_names()
+if tables:
+    table_var1 = StringVar()
+    table_combobox1 = ttk.Combobox(second_frame, textvariable=table_var1, values=tables)
+    table_combobox1.set("Select a table")
+    table_combobox1.grid(row=27, column=4, padx=5, pady=5)
+else:
+    messagebox.showwarning("No Tables", "No tables found in the database.")
+    
 starting_row_tree = 27
 
 tk.Label(second_frame , text= "select table to display data").grid(row = 26 , column = 4 , padx =5 ,pady =5)
-
-tk.Label(second_frame , text= "table name").grid(row=starting_row_tree , column = 3 ,padx=5 ,pady=5)
-entry_table_name = tk.Entry(second_frame)
-entry_table_name.grid(row = starting_row_tree , column = 4 , padx = 5 , pady=5)
 
 tk.Button(second_frame , text="Fetch tabel Data", command=fetch_table_data).grid(row = starting_row_tree , column = 5 , padx=10 ,pady=10)
 
@@ -502,6 +560,18 @@ tk.Button(second_frame, text="Execute Join Query", command=execute_join_query).g
 tree_join = ttk.Treeview(second_frame, columns=("Column1", "Column2", "Column3"), show="headings")
 tree_join.grid(row=join_base_row + 3, column=0, columnspan=8, padx=10, pady=10, sticky="nsew")
 
+
+# Update GUI to include export functionality
+
+if tables:
+    table_var = StringVar()
+    table_combobox = ttk.Combobox(second_frame, textvariable=table_var, values=tables)
+    table_combobox.set("Select a table")
+    table_combobox.grid(row=40, column=1, padx=5, pady=5)
+else:
+    messagebox.showwarning("No Tables", "No tables found in the database.")
+
+Button(second_frame, text="Export to CSV", command=export_to_csv).grid(row=40, column=2, padx=10, pady=10)
 
 # Run the Application
 root.mainloop()
