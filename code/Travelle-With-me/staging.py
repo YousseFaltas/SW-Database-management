@@ -11,53 +11,7 @@ def connect_to_database():
     except pyodbc.Error as e:
         messagebox.showerror("Database Error", f"Error connecting to database: {e}")
         return None
-
-# Insert operations
-def insert_customer():
-    name = entry_cust_name.get()
-    phone = entry_cust_phone.get()
-    email = entry_cust_email.get()
-    nationality = entry_cust_nationality.get()
-    if name and phone and email and nationality:
-        conn = connect_to_database()
-        if conn:
-            cursor = conn.cursor()
-            try:
-                cursor.execute("""
-                    INSERT INTO Customer (Cust_Name, Cust_phone, Cust_Email, Nationality)
-                    VALUES (?, ?, ?, ?)""", (name, phone, email, nationality))
-                conn.commit()
-                messagebox.showinfo("Success", "Customer inserted successfully!")
-                fetch_customer_data()
-            except pyodbc.Error as e:
-                messagebox.showerror("Error", f"Error inserting customer: {e}")
-            finally:
-                conn.close()
-    else:
-        messagebox.showwarning("Input Error", "Please fill all fields!")
-
-def insert_hotel():
-    name = entry_hotel_name.get()
-    location = entry_hotel_loc.get()
-    policy = entry_hotel_policy.get()
-    if name and location and policy:
-        conn = connect_to_database()
-        if conn:
-            cursor = conn.cursor()
-            try:
-                cursor.execute("""
-                    INSERT INTO Hotel (H_Name, H_Loc, H_Policy)
-                    VALUES (?, ?, ?)""", (name, location, policy))
-                conn.commit()
-                messagebox.showinfo("Success", "Hotel inserted successfully!")
-                fetch_hotel_data()
-            except pyodbc.Error as e:
-                messagebox.showerror("Error", f"Error inserting hotel: {e}")
-            finally:
-                conn.close()
-    else:
-        messagebox.showwarning("Input Error", "Please fill all fields!")
-
+    
 # Delete operations
 def delete_room():
     room_id = entry_room_id.get()
@@ -186,44 +140,6 @@ canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 scrollbar.config(command=canvas.yview)
 
 canvas.config(scrollregion=canvas.bbox(tk.ALL))
-
-# Insert Section
-frame_insert = tk.Frame(canvas)
-frame_insert.pack(pady=10)
-
-tk.Label(frame_insert, text="Customer ID:").grid(row=0, column=0, padx=5, pady=5)
-entry_cust_name = tk.Entry(frame_insert)
-entry_cust_name.grid(row=0, column=1, padx=5, pady=5)
-
-tk.Label(frame_insert, text="Customer Phone:").grid(row=0, column=2, padx=5, pady=5)
-entry_cust_phone = tk.Entry(frame_insert)
-entry_cust_phone.grid(row=0, column=3, padx=5, pady=5)
-
-tk.Label(frame_insert, text="Customer Email:").grid(row=0, column=4, padx=5, pady=5)
-entry_cust_email = tk.Entry(frame_insert)
-entry_cust_email.grid(row=0, column=5, padx=5, pady=5)
-
-tk.Label(frame_insert, text="Nationality:").grid(row=0, column=6, padx=5, pady=5)
-entry_cust_nationality = tk.Entry(frame_insert)
-entry_cust_nationality.grid(row=0, column=7, padx=5, pady=5)
-
-tk.Button(frame_insert, text="Add Customer", command=insert_customer).grid(row=1, column=4, padx=10, pady=10)
-
-# starting the input frame for the hotel table
-hotel_info_row  = 3
-tk.Label(frame_insert, text="Hotel ID:").grid(row=hotel_info_row, column=0, padx=5, pady=5)
-entry_hotel_name = tk.Entry(frame_insert)
-entry_hotel_name.grid(row=hotel_info_row, column=1, padx=5, pady=5)
-
-tk.Label(frame_insert, text="Hotel Location:").grid(row=hotel_info_row, column=3, padx=5, pady=5)
-entry_hotel_loc = tk.Entry(frame_insert)
-entry_hotel_loc.grid(row=hotel_info_row, column=3, padx=5, pady=5)
-
-tk.Label(frame_insert, text="Hotel Policy:").grid(row=hotel_info_row, column=4, padx=5, pady=5)
-entry_hotel_policy = tk.Entry(frame_insert)
-entry_hotel_policy.grid(row=hotel_info_row, column=5, padx=5, pady=5)
-
-tk.Button(frame_insert, text="Add Hotel", command=insert_hotel).grid(row=hotel_info_row+1, column=4, padx=10, pady=10)
 
 # Delete Section
 frame_delete = tk.Frame(canvas)
