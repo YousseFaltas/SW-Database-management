@@ -3,11 +3,12 @@ import email
 from tkinter import *
 import tkinter as tk
 from tkinter import ttk, messagebox
-from turtle import update
+from turtle import update, width
 from venv import create
 import pyodbc
 import csv
 from tkinter import filedialog
+import math
 
 def connect_to_database ():
     try :
@@ -111,6 +112,12 @@ def delete_ticket():
     else:
         messagebox.showwarning("Input Error", "Please enter a valid condition")
 
+def configure_treeview_fetch_columns(columns):
+    tree_fetch["columns"] = columns
+    for col in columns:
+        tree_fetch.heading(col, text=col)
+        tree_fetch.column(col, width=40)
+        
 # Select operations
 def fetch_table_data():
     table_name = table_var1.get()
@@ -120,21 +127,24 @@ def fetch_table_data():
         try:
             cursor.execute(f"SELECT * FROM {table_name}")
             rows = cursor.fetchall()
-            cursor.execute("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = ?",(table_name))
-            tabel_columns=cursor.fetchall()
             
-            tree_room_booked = ttk.Treeview(second_frame, columns=tabel_columns, show="headings")
-            tree_room_booked.grid(row=starting_row_tree+1, column=1, columnspan=8, padx=10, pady=10, sticky="nsew")
-            tree_room_booked.delete(*tree_room_booked.get_children())  # Clear existing rows
-            
-            for col in tabel_columns:
-                tree_room_booked.heading(col, text=col)
-            
+            # Get column names from the query result
+            column_names = [column[0] for column in cursor.description]
+
+            # Clear the existing data in the treeview
+            for row in tree_fetch.get_children():
+                tree_fetch.delete(row)
+
+            # Configure the Treeview columns dynamically
+            configure_treeview_fetch_columns(column_names)
+
+            # Insert the new data into the treeview
             for row in rows:
                 row_values = []
                 for value in row:
                     row_values.append(value)
-                tree_room_booked.insert("", tk.END, values=row_values)
+                tree_fetch.insert("", tk.END, values=row_values)
+         
             
         except pyodbc.Error as e:
             messagebox.showerror("Error", f"Error fetching customer data: {e}")
@@ -530,6 +540,11 @@ else:
 starting_row_tree = 27
 
 tk.Label(second_frame , text= "select table to display data").grid(row = 26 , column = 4 , padx =5 ,pady =5)
+
+tree_fetch = ttk.Treeview(second_frame, columns=("Column1", "Column2", "Column3"), show="headings")
+tree_fetch.grid(row=starting_row_tree+ 1, column=0, columnspan=8, padx=10, pady=10, sticky="nsew")
+# Set a fixed size for the Treeview
+tree_fetch.config(height=10)  # Fixed number of visible rows
 
 tk.Button(second_frame , text="Fetch tabel Data", command=fetch_table_data).grid(row = starting_row_tree , column = 5 , padx=10 ,pady=10)
 
