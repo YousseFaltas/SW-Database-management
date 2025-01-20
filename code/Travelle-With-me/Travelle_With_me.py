@@ -116,9 +116,9 @@ def configure_treeview_fetch_columns(columns):
     tree_fetch["columns"] = columns
     for col in columns:
         tree_fetch.heading(col, text=col)
-        tree_fetch.column(col, width=40)
-        
-# Select operations
+        tree_fetch.column(col)
+       
+ 
 def fetch_table_data():
     table_name = table_var1.get()
     conn = connect_to_database()
@@ -126,32 +126,19 @@ def fetch_table_data():
         cursor = conn.cursor()
         try:
             cursor.execute(f"SELECT * FROM {table_name}")
-            rows = cursor.fetchall()
-            
-            # Get column names from the query result
+            rows = [list(row) for row in cursor.fetchall() ] 
             column_names = [column[0] for column in cursor.description]
-
-            # Clear the existing data in the treeview
             for row in tree_fetch.get_children():
                 tree_fetch.delete(row)
-
-            # Configure the Treeview columns dynamically
             configure_treeview_fetch_columns(column_names)
-
-            # Insert the new data into the treeview
             for row in rows:
-                row_values = []
-                for value in row:
-                    row_values.append(value)
-                tree_fetch.insert("", tk.END, values=row_values)
-         
-            
+                tree_fetch.insert("", tk.END, values=row)
         except pyodbc.Error as e:
-            messagebox.showerror("Error", f"Error fetching customer data: {e}")
+            messagebox.showerror("Error", f"Error fetching data: {e}")
         finally:
             conn.close()
     else:
-        messagebox.showwarning("Input Error", "Please enter a table")
+        messagebox.showwarning("Input Error", "Please select a table")
             
 def update_room () :
     int_arr = ["H_id, R_id , R_Price"]
@@ -234,7 +221,7 @@ def execute_join_query():
                 INNER JOIN {table2} ON {join_condition};
                 """
                 cursor.execute(query)
-                rows = cursor.fetchall()
+                rows = [list(row) for row in cursor.fetchall() ] 
 
                 # Clear the existing data in the treeview
                 for row in tree_join.get_children():
@@ -258,7 +245,7 @@ def configure_treeview_columns(columns):
     tree_join["columns"] = columns
     for col in columns:
         tree_join.heading(col, text=col)
-        tree_join.column(col, width=100)
+        tree_join.column(col, width=150 , stretch= False)
 
 # Modify the execute_join_query function to configure the Treeview columns
 def execute_join_query():
@@ -355,7 +342,7 @@ def export_to_csv():
         
 root = tk.Tk()
 root.title("database GUI")
-
+root.geometry("1200x600")
 #create a main frame
 main_frame = Frame(root)
 main_frame.pack(fill=BOTH , expand =1)
@@ -373,8 +360,9 @@ main_canvas.configure(yscrollcommand=main_scrollbar.set)
 main_canvas.bind('<Configure>' , lambda e: main_canvas.configure(scrollregion=main_canvas.bbox("all")))
     
 #create another frame in the canvas
-second_frame = Frame(main_canvas)
-    
+second_frame = Frame(main_canvas , width= 500 , height=1100)
+second_frame.pack_propagate(False)
+
 # add that new frame to a window in the canvas
 main_canvas.create_window((0,0), window=second_frame, anchor="nw")
 
@@ -541,15 +529,34 @@ starting_row_tree = 27
 
 tk.Label(second_frame , text= "select table to display data").grid(row = 26 , column = 4 , padx =5 ,pady =5)
 
-tree_fetch = ttk.Treeview(second_frame, columns=("Column1", "Column2", "Column3"), show="headings")
-tree_fetch.grid(row=starting_row_tree+ 1, column=0, columnspan=8, padx=10, pady=10, sticky="nsew")
-# Set a fixed size for the Treeview
-tree_fetch.config(height=10)  # Fixed number of visible rows
+tree_frame = tk.Frame(second_frame, width=800 , height=400)
+tree_frame.grid(row=starting_row_tree + 1, column=0, columnspan=8, padx=10, pady=10, sticky="nsew")
+tree_frame.grid_propagate(False)
+
+
+tree_fetch = ttk.Treeview(tree_frame, columns=("Column1", "Column2", "Column3"), show="headings")
+tree_fetch.grid(row=0, column=0, sticky="nsew")
+
+# Add a horizontal scrollbar
+tree_horizontal_scroll = ttk.Scrollbar(tree_frame, orient="horizontal", command=tree_fetch.xview)
+tree_horizontal_scroll.grid(row=1, column=0, sticky="ew")
+
+# Configure the Treeview to use the horizontal scrollbar
+tree_fetch.configure(xscrollcommand=tree_horizontal_scroll.set)
+
+# Ensure the Treeview expands to fill the frame
+tree_frame.grid_rowconfigure(0, weight=1)
+tree_frame.grid_columnconfigure(0, weight=1)
+
+# Add a vertical scrollbar 
+tree_vertical_scroll = ttk.Scrollbar(tree_frame, orient="vertical", command=tree_fetch.yview)
+tree_vertical_scroll.grid(row=0, column=1, sticky="ns")
+tree_fetch.configure(yscrollcommand=tree_vertical_scroll.set)
 
 tk.Button(second_frame , text="Fetch tabel Data", command=fetch_table_data).grid(row = starting_row_tree , column = 5 , padx=10 ,pady=10)
 
 
-# Add this section to the GUI for join queries
+# GUI for join queries
 join_base_row = 30
 tk.Label(second_frame, text="Join Query Section").grid(row=join_base_row, column=4, padx=10, pady=10)
 
@@ -572,11 +579,32 @@ entry_join_columns.grid(row=join_base_row + 2, column=1, padx=5, pady=5)
 tk.Button(second_frame, text="Execute Join Query", command=execute_join_query).grid(row=join_base_row + 2, column=4, padx=10, pady=10)
 
 # Add a Treeview to display join query results
-tree_join = ttk.Treeview(second_frame, columns=("Column1", "Column2", "Column3"), show="headings")
-tree_join.grid(row=join_base_row + 3, column=0, columnspan=8, padx=10, pady=10, sticky="nsew")
+tree_frame_join = tk.Frame(second_frame, width=800 , height=400)
+tree_frame_join.grid(row=join_base_row+3 , column=0, columnspan=8, padx=10, pady=10, sticky="nsew")
+tree_frame_join.grid_propagate(False)
 
 
-# Update GUI to include export functionality
+tree_join = ttk.Treeview(tree_frame_join, columns=("Column1", "Column2", "Column3"), show="headings")
+tree_join.grid(row=0, column=0, columnspan=8, padx=10, pady=10, sticky="nsew")
+
+
+# Add a horizontal scrollbar
+tree_horizontal_scroll_1 = ttk.Scrollbar(tree_frame_join, orient="horizontal", command=tree_join.xview)
+tree_horizontal_scroll_1.grid(row=1, column=0, sticky="ew")
+
+# Configure the Treeview to use the horizontal scrollbar
+tree_join.configure(xscrollcommand=tree_horizontal_scroll_1.set)
+
+# Ensure the Treeview expands to fill the frame
+tree_frame_join.grid_rowconfigure(0, weight=1)
+tree_frame_join.grid_columnconfigure(0, weight=1)
+
+# Add a vertical scrollbar 
+tree_vertical_scroll_1 = ttk.Scrollbar(tree_frame_join, orient="vertical", command=tree_join.yview)
+tree_vertical_scroll_1.grid(row=0, column=1, sticky="ns")
+tree_join.configure(yscrollcommand=tree_vertical_scroll_1.set)
+
+# GUI to include export functionality
 
 if tables:
     table_var = StringVar()
@@ -588,5 +616,6 @@ else:
 
 Button(second_frame, text="Export to CSV", command=export_to_csv).grid(row=40, column=2, padx=10, pady=10)
 
+root.resizable(False, False)
 # Run the Application
 root.mainloop()
